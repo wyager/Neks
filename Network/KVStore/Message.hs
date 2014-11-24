@@ -14,7 +14,7 @@ parseRequest :: ByteString -> Either String Request
 parseRequest bs = case decode bs of
 	Right (ObjectArray [ObjectInt 0, ObjectBinary k]) -> Right (Get k)
 	Right (ObjectArray [ObjectInt 1, ObjectBinary k, ObjectBinary v]) -> Right (Set k v)
-	Right _ -> Left "Invalid request structure"
+	Right x -> Left ("Invalid request structure: " ++ show x)
 	Left error -> Left ("Request decode error: " ++ error)
 
 formatRequest :: Request -> ByteString
