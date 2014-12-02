@@ -9,22 +9,26 @@ import qualified Data.Map.Strict as Map (Map, empty, insert, lookup) -- insert, 
 import Control.Concurrent.STM (STM) -- atomically
 import Control.Concurrent.STM.TMVar (TMVar, newTMVar, takeTMVar, putTMVar, readTMVar)
 import Data.ByteString (ByteString)
+import Data.Vector (Vector, fromList, (!))
+import Network.KVStore.Hash (hash)
 
-newtype DataStore k v = DataStore {mapOf :: TMVar (Map.Map k v)}
+newtype DataStore k v = DataStore {mapsOf :: Vector (TMVar (Map.Map k v))}
 
 type BinaryStore = DataStore ByteString ByteString
 
 createStore :: Ord k => STM (DataStore k v)
 createStore = do
-	map <- newTMVar Map.empty
-	return (DataStore map)
+	maps <- sequence [newTMVar Map.empty | _ <- [1..32]]
+	return (DataStore (fromList maps))
 
-insert :: Ord k => k -> v -> DataStore k v -> STM ()
-insert k v store = do
-	map <- takeTMVar (mapOf store)
-	putTMVar (mapOf store) $! (Map.insert k v map)
+insert :: ByteString -> ByteString -> BinaryStore -> STM ()
+insert k v (DataStore maps) = do
+	let atomicMap = maps ! hash k
+	map <- takeTMVar atomicMap
+	putTMVar atomicMap $! (Map.insert k v map)
 
-get :: Ord k => k -> DataStore k v -> STM (Maybe v)
-get k store = do
-	map <- readTMVar (mapOf store)
+get :: ByteString -> BinaryStore -> STM (Maybe ByteString)
+get k (DataStore maps) = do
+	let atomicMap = maps ! hash k
+	map <- readTMVar atomicMap
 	return (Map.lookup k map)

@@ -27,7 +27,7 @@ wait :: Net.Socket -> BinaryStore -> IO ThreadId
 wait sock store = do
 	(hdl, _, _) <- Net.accept sock
 	let run = (handle hdl store `finally` hClose hdl) `catch` handleWith (return ())
-	forkIO $ timeout 10 run >> return ()
+	forkIO $ run -- timeout 10 run >> return ()
 
 handle :: Handle -> BinaryStore -> IO ()
 handle hdl store = do -- IO

@@ -26,12 +26,13 @@ def netRead(sock):
 	return recvall(sock, length)
 
 def makeSetMessage(key, value):
-	b_key = key.encode('utf-8')
-	b_value = value.encode('utf-8')
-	return msgpack.packb([1, b_key, b_value], use_bin_type=True)
+	assert(type(key) == bytes)
+	assert(type(value) == bytes)
+	return msgpack.packb([1, key, value], use_bin_type=True)
 
 def makeGetMessage(key):
-	return msgpack.packb([0, key.encode('utf-8')], use_bin_type=True)
+	assert(type(key) == bytes)
+	return msgpack.packb([0, key], use_bin_type=True)
 
 def parseReply(reply):
 	reply = msgpack.unpackb(reply)
@@ -42,15 +43,22 @@ def parseReply(reply):
 	else:
 		raise Exception("Invalid response code")
 
+class Server():
+	def __init__(self, host, port):
+		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.sock.connect((host, port))
+	def set(self, key, value):
+		msg = makeSetMessage(key, value)
+		netWrite(self.sock, msg)
+	def get(self, key):
+		msg = makeGetMessage(key)
+		netWrite(self.sock, msg)
+		reply = parseReply(netRead(self.sock))
+		assert(reply[0]==key)
+		return reply[1] # None or the value
+
 if __name__ == '__main__':
-	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	sock.connect(("0.0.0.0",9999))
-	msg = makeSetMessage("Jello", "goodbye")
-	# for i in range(10000000):
-	netWrite(sock, msg)
-	msg = makeGetMessage("Jello")
-	print(msg)
-	for i in range(100000):
-		netWrite(sock, msg)
-		reply = parseReply(netRead(sock))
-		assert(reply == (b'Jello', b'goodbye'))
+	server = Server("0.0.0.0",9999)
+	for i in range(10000):
+		server.set(b"hello", b"goodbye")
+		assert(server.get(b"hello") == b"goodbye")
