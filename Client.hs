@@ -40,8 +40,9 @@ readS = do
 
 main = Net.withSocketsDo $ do
 	locks <- sequence [newEmptyMVar | _ <- [1..1000]]
-	threads <- sequence [forkIO (connectWith lock) | lock <- locks]
-	sequence_ [takeMVar lock | lock <- locks]
+	threads <- sequence [forkIO (connectWith lock) >> takeMVar lock | lock <- locks]
+	--sequence_ [takeMVar lock | lock <- locks]
+	return ()
 	where connectWith lock = do
 		writeS
 		readS

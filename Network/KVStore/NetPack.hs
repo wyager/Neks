@@ -20,9 +20,9 @@ netWrite :: Handle -> ByteString -> IO ()
 netWrite hdl = BSL.hPut hdl . netWritePack
 
 netRead :: Handle -> IO (Either String ByteString)
-netRead hdl = write `catch` handleWith (return (Left "Network read error"))
+netRead hdl = read `catch` handleWith (return (Left "Network read error"))
 	where 
-	write = do
+	read = do
 		length <- runGet getWord64be . BSL.fromStrict <$> hGet hdl 8
 		if length < 10^6
 			then Right <$> hGet hdl (fromIntegral length)
