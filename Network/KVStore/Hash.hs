@@ -5,6 +5,6 @@ module Network.KVStore.Hash (
 import Data.ByteString as BS (ByteString, foldl)
 import Data.Bits ((.&.))
 
--- Produces a number in the range 0-31
+-- Produces a number in the range 0-255
 hash :: Num b => ByteString -> b
-hash = fromIntegral . (.&. 0x1F) . (BS.foldl (+) 0)
+hash = fromIntegral (BS.foldl (+) 0)

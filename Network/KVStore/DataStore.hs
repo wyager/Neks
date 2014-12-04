@@ -18,7 +18,7 @@ type BinaryStore = DataStore ByteString ByteString
 
 createStore :: Ord k => STM (DataStore k v)
 createStore = do
-	maps <- sequence [newTMVar Map.empty | _ <- [1..32]]
+	maps <- sequence [newTMVar Map.empty | _ <- [0..255]]
 	return (DataStore (fromList maps))
 
 insert :: ByteString -> ByteString -> BinaryStore -> STM ()
