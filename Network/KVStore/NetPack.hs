@@ -19,8 +19,7 @@ netWrite hdl msg = do
 
 netRead :: Handle -> IO (Either String ByteString)
 netRead hdl = read `catch` handleWith (return (Left "Network read error"))
-	where 
-	read = do
+	where read = do
 		lengthBytes <- hGet hdl 8
 		let length = case decode lengthBytes of
 			Right len -> len :: Word64

@@ -3,7 +3,7 @@ KVStore
 
 ##### A dead simple key/value store
 
-KVStore is an in-memory key/value store written in Haskell.
+KVStore is an in-memory key/value store written in 175 lines of Haskell.
 
 It's highly concurrent and pretty fast.
 
