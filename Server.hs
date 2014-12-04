@@ -1,14 +1,14 @@
 module Main where
 
 import Network.KVStore.DataStore (BinaryStore, createStore, insert, get)
-import Network.KVStore.Actions (Request(..), Reply(..))
+import Network.KVStore.Actions (Request(Set, Get), Reply(Found, NotFound))
 import Network.KVStore.NetPack (netRead, netWrite)
 import Network.KVStore.Message (parseRequest, formatResponse)
 import Network.KVStore.Exception (handleWith, timeout)
 import qualified Network as Net
 import System.IO (Handle, hClose)
-import Control.Monad (forever, join)
-import Control.Exception (catch, finally, SomeException) 
+import Control.Monad (forever)
+import Control.Exception (catch, finally) 
 import Control.Concurrent (ThreadId, forkIO)
 import Control.Concurrent.STM (atomically)
 
@@ -33,7 +33,6 @@ handle :: Handle -> BinaryStore -> IO ()
 handle hdl store = do -- IO
 	content <- netRead hdl
 	let command = content >>= parseRequest
-	--print command
 	case command of
 		Left err -> return () -- Can add error reporting here
 		Right (Set k v) -> atomically (insert k v store) >> handle hdl store
@@ -42,8 +41,5 @@ handle hdl store = do -- IO
 			let response = case value of
 				Just v -> Found k v
 				Nothing -> NotFound k
-			--print response
 			netWrite hdl $ formatResponse response
 			handle hdl store
-			
-

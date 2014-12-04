@@ -5,12 +5,11 @@ module Network.KVStore.DataStore (
 	get
 ) where
 
-import qualified Data.Map.Strict as Map (Map, empty, insert, lookup) -- insert, member, elems, keys
-import Control.Concurrent.STM (STM) -- atomically
+import qualified Data.Map.Strict as Map (Map, empty, insert, lookup)
+import Control.Concurrent.STM (STM)
 import Control.Concurrent.STM.TMVar (TMVar, newTMVar, takeTMVar, putTMVar, readTMVar)
-import Data.ByteString (ByteString)
+import Data.ByteString as BS (ByteString, foldl)
 import Data.Vector (Vector, fromList, (!))
-import Network.KVStore.Hash (hash)
 
 newtype DataStore k v = DataStore {mapsOf :: Vector (TMVar (Map.Map k v))}
 
@@ -32,3 +31,7 @@ get k (DataStore maps) = do
 	let atomicMap = maps ! hash k
 	map <- readTMVar atomicMap
 	return (Map.lookup k map)
+
+-- Produces a number in the range 0-255
+hash :: Num b => ByteString -> b
+hash = fromIntegral . (BS.foldl (+) 0)

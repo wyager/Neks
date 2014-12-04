@@ -6,7 +6,7 @@ module Network.KVStore.Message (
 ) where
 
 import Data.ByteString (ByteString)
-import Network.KVStore.Actions (Request(..), Reply(..))
+import Network.KVStore.Actions (Request(Set, Get), Reply(Found, NotFound))
 import Data.Serialize (encode, decode)
 import Data.MessagePack (Object(ObjectArray, ObjectInt, ObjectBinary))
 
