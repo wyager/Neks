@@ -16,7 +16,6 @@ main = do
 	globalStore <- atomically createStore
 	-- Can load saved store from disk here
 	serve globalStore
-	putStrLn "hello"
 
 serve :: BinaryStore -> IO ()
 serve store = Net.withSocketsDo $ do
