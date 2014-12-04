@@ -34,7 +34,9 @@ handle hdl store = do -- IO
 	let command = content >>= parseRequest
 	case command of
 		Left err -> return () -- Can add error reporting here
-		Right (Set k v) -> atomically (insert k v store) >> handle hdl store
+		Right (Set k v) -> do
+			atomically (insert k v store)
+			handle hdl store
 		Right (Get k) -> do
 			value <- atomically (get k store)
 			let response = case value of
