@@ -29,6 +29,9 @@ To run the Python client:
 
 All network encoding is done using [msgpack](http://msgpack.org).
 
+Messages are preceded by the length of the message, transmitted as a 
+64-bit big-endian unsigned integer.
+
 - Requests to Set key `K` to value `V` are sent as `[1, K, V]` 
 (where `K` and `V` are binary arrays). 
 - Requests to Get key `K` are sent as `[0, K]`. The server sends a response.
