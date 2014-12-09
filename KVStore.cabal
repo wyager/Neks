@@ -26,7 +26,8 @@ executable KVClient
                        containers >= 0.5.5.1,
                        stm >= 2.4.2,
                        network >= 2.4.2.3,
-                       vector >= 0.10.9.1
+                       vector >= 0.10.9.1,
+                       transformers >= 0.4.2.0
 
   -- hs-source-dirs:      
   default-language:    Haskell2010
@@ -43,7 +44,8 @@ executable KVServer
                        containers >= 0.5.5.1,
                        stm >= 2.4.2,
                        network >= 2.4.2.3,
-                       vector >= 0.10.9.1
+                       vector >= 0.10.9.1,
+                       transformers >= 0.4.2.0
 
   -- hs-source-dirs:      
   default-language:    Haskell2010
