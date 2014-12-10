@@ -7,7 +7,6 @@ import Network.KVStore.Message (parseRequests, formatResponses)
 import Network.KVStore.Exception (handleWith, timeout)
 import qualified Network as Net
 import System.IO (Handle, hClose)
-import Data.Maybe (catMaybes)
 import Control.Monad (forever, unless)
 import Control.Exception (catch, finally) 
 import Control.Concurrent (ThreadId, forkIO)
@@ -26,7 +25,7 @@ serve store = Net.withSocketsDo $ do
 wait :: Net.Socket -> BinaryStore -> IO ThreadId
 wait sock store = do
 	(client, _, _) <- Net.accept sock
-	let run = (handle client store `finally` hClose client) -- `catch` handleWith (return ())
+	let run = (handle client store `finally` hClose client) `catch` handleWith (return ())
 	forkIO run -- $ timeout 10 run >> return ()
 
 handle :: Handle -> BinaryStore -> IO ()
@@ -34,7 +33,7 @@ handle client store = do
 	result <- processCommand client store
 	case result of
 		Right success -> (handle client store)
-		Left failure -> print failure
+		Left failure -> return () -- print failure -- Error reporting
 
 processCommand :: Handle -> BinaryStore -> IO (Either String ())
 processCommand client store = do
