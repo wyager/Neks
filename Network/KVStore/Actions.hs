@@ -1,12 +1,9 @@
 module Network.KVStore.Actions (
-	Request(..),
-	Reply(..)
+	Request(Set, Get),
+	Reply(Found, NotFound)
 ) where
 
 import Data.ByteString (ByteString)
 
-data Request = Set {k :: ByteString, v :: ByteString} | 
-			   Get {k :: ByteString} deriving (Show, Eq)
-
-data Reply = Found {foundKey :: ByteString, foundValue :: ByteString} |
-			 NotFound {foundKey :: ByteString} deriving (Show, Eq)
+data Request = Set ByteString ByteString | Get ByteString deriving (Show, Eq)
+data Reply = Found ByteString ByteString | NotFound ByteString deriving (Show, Eq)

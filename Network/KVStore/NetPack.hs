@@ -17,7 +17,7 @@ netWrite hdl msg = do
 	BS.hPut hdl msg
 
 netRead :: Handle -> IO (Either String ByteString)
-netRead hdl = read --`catch` handleWith (return (Left "Network read error"))
+netRead hdl = read `catch` handleWith (return (Left "Network read error"))
 	where 
 	read = do
 		lengthBytes <- hGet hdl 8
