@@ -3,7 +3,7 @@ module Network.KVStore.NetPack (
 	netRead
 ) where
 
-import Data.ByteString as BS (ByteString, hGet, length, hPut)
+import Data.ByteString as BS (ByteString, hGet, length, hPut, append)
 import Network.KVStore.Exception (handleWith)
 import Data.Serialize (encode, decode)
 import Control.Exception (catch)
@@ -13,8 +13,7 @@ import Data.Word (Word64)
 netWrite :: Handle -> ByteString -> IO ()
 netWrite hdl msg = do
 	let len = fromIntegral (BS.length msg) :: Word64
-	BS.hPut hdl (encode len)
-	BS.hPut hdl msg
+	BS.hPut hdl (encode len `append` msg)
 
 netRead :: Handle -> IO (Either String ByteString)
 netRead hdl = do
