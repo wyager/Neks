@@ -18,15 +18,14 @@ connectTo server = Net.connectTo server (Net.PortNumber 9999)
 
 
 main = Net.withSocketsDo $ do
-	locks <- sequence [newEmptyMVar | _ <- [1..1000]] -- 1000 threads
+	locks <- sequence [newEmptyMVar | _ <- [1..100]] -- 1000 threads
 	threads <- sequence [forkIO (testWith lock) | lock <- locks]
 	sequence_ [takeMVar lock | lock <- locks] -- Wait for threads to finish
 
 testWith :: MVar () -> IO ()
 testWith lock = do
 	server <- connectTo "0.0.0.0"
-	writeTo server
-	--readFrom server
+	sequence_ $ replicate 500 $ writeTo server >> readFrom server
 	putMVar lock ()
 	where
 	writeTo server = do

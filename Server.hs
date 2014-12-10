@@ -8,7 +8,7 @@ import Network.KVStore.Exception (handleWith, timeout)
 import qualified Network as Net
 import System.IO (Handle, hClose)
 import Data.Maybe (catMaybes)
-import Control.Monad (forever)
+import Control.Monad (forever, unless)
 import Control.Exception (catch, finally) 
 import Control.Concurrent (ThreadId, forkIO)
 import Control.Concurrent.STM (atomically)
@@ -25,32 +25,29 @@ serve store = Net.withSocketsDo $ do
 
 wait :: Net.Socket -> BinaryStore -> IO ThreadId
 wait sock store = do
-	(hdl, _, _) <- Net.accept sock
-	let run = (handle hdl store `finally` hClose hdl) -- `catch` handleWith (return ())
+	(client, _, _) <- Net.accept sock
+	let run = (handle client store `finally` hClose client) -- `catch` handleWith (return ())
 	forkIO run -- $ timeout 10 run >> return ()
 
 handle :: Handle -> BinaryStore -> IO ()
-handle hdl store = do
-	content <- netRead hdl
-	let commands = content >>= parseRequests
-	case commands of
-		Left err -> print err
-		Right commands -> do
-			results <- run commands store
-			if null results -- Do we need to report anything to the client?
-				then return () -- Nothing to send back
-				else netWrite hdl $ formatResponses $ results
-	handle hdl store
+handle client store = do
+	result <- processCommand client store
+	case result of
+		Right success -> (handle client store)
+		Left failure -> print failure
 
-run :: [Request] -> BinaryStore -> IO [Reply]
-run []                   _     = return []
-run (Set k v : requests) store = do
-	atomically (insert k v store)
-	run requests store
-run (Get k   : requests) store = do
-	value <- atomically (get k store)
-	let result = case value of
-		Just v -> Found k v
-		Nothing -> NotFound k
-	results <- run requests store
-	return (result : results)
+processCommand :: Handle -> BinaryStore -> IO (Either String ())
+processCommand client store = do
+	commandData <- netRead client
+	case commandData >>= parseRequests of
+		Left err -> return (Left err)
+		Right commands -> do
+			sequence [atomically (insert k v store) | Set k v <- commands]
+			results <- sequence [lookup k | Get k <- commands]
+			unless (null results) (netWrite client $ formatResponses $ results)
+			return (Right ())
+	where lookup k = do
+		result <- atomically (get k store)
+		return $ case result of
+			Nothing -> NotFound k
+			Just v -> Found k v

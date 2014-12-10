@@ -29,18 +29,18 @@ def netRead(sock):
 def makeSetMessage(key, value):
 	assert(type(key) == bytes)
 	assert(type(value) == bytes)
-	return msgpack.packb([1, key, value], use_bin_type=True)
+	return msgpack.packb([[1, key, value]], use_bin_type=True)
 
 def makeGetMessage(key):
 	assert(type(key) == bytes)
-	return msgpack.packb([0, key], use_bin_type=True)
+	return msgpack.packb([[0, key]], use_bin_type=True)
 
 def parseReply(reply):
 	reply = msgpack.unpackb(reply)
-	if reply[0] == -1:
-		return (reply[1], reply[2]) # Found value for key
-	elif reply[1] == -2:
-		return (reply[1], None) # Didn't find value for key
+	if reply[0][0] == -1:
+		return (reply[0][1], reply[0][2]) # Found value for key
+	elif reply[0][1] == -2:
+		return (reply[0][1], None) # Didn't find value for key
 	else:
 		raise Exception("Invalid response code")
 
