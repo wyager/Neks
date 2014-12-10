@@ -25,6 +25,16 @@ To run the Python client:
 
     python3 Client.py
 
+##### Benchmark:
+
+Running the server with 2 cores and a client with
+
+- 100 threads
+- 500 reads and 500 writes per thread
+- 50 key/value pairs per read/write
+
+takes ~4.3 seconds on my laptop. That's `(100*500*2*50)/4.3 = 1,162,790` transactions per second.
+
 ##### Protocol:
 
 All network encoding is done using [msgpack](http://msgpack.org).
