@@ -1,5 +1,5 @@
 module Network.KVStore.DataStore (
-	BinaryStore,
+	DataStore,
 	createStore,
 	insert,
 	get
@@ -8,27 +8,25 @@ module Network.KVStore.DataStore (
 import qualified Data.Map.Strict as Map (Map, empty, insert, lookup)
 import Control.Concurrent.STM (STM)
 import Control.Concurrent.STM.TMVar (TMVar, newTMVar, takeTMVar, putTMVar, readTMVar)
-import Data.ByteString as BS (ByteString)
+import Data.Hashable (Hashable)
 import Data.Vector (Vector, fromList, (!))
 import Data.Hashable (hash)
 import Data.Bits ((.&.))
 
 newtype DataStore k v = DataStore {mapsOf :: Vector (TMVar (Map.Map k v))}
 
-type BinaryStore = DataStore ByteString ByteString
-
-createStore :: Ord k => STM (DataStore k v)
+createStore :: STM (DataStore k v)
 createStore = do
 	maps <- sequence [newTMVar Map.empty | _ <- [0..255]]
 	return (DataStore (fromList maps))
 
-insert :: ByteString -> ByteString -> BinaryStore -> STM ()
+insert :: (Hashable k, Ord k) => k -> v -> DataStore k v -> STM ()
 insert k v (DataStore maps) = do
 	let atomicMap = maps ! (hash k .&. 0xFF)
 	map <- takeTMVar atomicMap
 	putTMVar atomicMap $! (Map.insert k v map)
 
-get :: ByteString -> BinaryStore -> STM (Maybe ByteString)
+get :: (Hashable k, Ord k) => k -> DataStore k v -> STM (Maybe v)
 get k (DataStore maps) = do
 	let atomicMap = maps ! (hash k .&. 0xFF)
 	map <- readTMVar atomicMap
