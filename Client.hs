@@ -16,7 +16,6 @@ import Control.Concurrent.MVar (MVar, newEmptyMVar, takeMVar, putMVar)
 connectTo :: String -> IO Handle
 connectTo server = Net.connectTo server (Net.PortNumber 9999)
 
-
 main = Net.withSocketsDo $ do
 	locks <- sequence [newEmptyMVar | _ <- [1..100]] -- 100 threads
 	threads <- sequence [forkIO (testWith lock) | lock <- locks]

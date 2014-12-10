@@ -17,15 +17,13 @@ netWrite hdl msg = do
 	BS.hPut hdl msg
 
 netRead :: Handle -> IO (Either String ByteString)
-netRead hdl = read `catch` handleWith (return (Left "Network read error"))
-	where 
-	read = do
-		lengthBytes <- hGet hdl 8
-		case decode lengthBytes of
-			Left err -> return (Left "Network stream ended while reading length")
-			Right len 	| len < (10^6 :: Word64) -> readData (fromIntegral len)
-						| otherwise -> return (Left "Message too long")
-	readData length = do
+netRead hdl = do
+	lengthBytes <- hGet hdl 8
+	case decode lengthBytes of
+		Left err -> return (Left "Network stream ended while reading length")
+		Right len 	| len < (10^6 :: Word64) -> readData (fromIntegral len)
+					| otherwise -> return (Left "Message too long")
+	where readData length = do
 		dataBytes <- hGet hdl length
 		if BS.length dataBytes /= length
 			then return (Left "Connection dropped during message read")
