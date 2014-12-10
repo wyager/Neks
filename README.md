@@ -32,7 +32,7 @@ All network encoding is done using [msgpack](http://msgpack.org).
 Messages are preceded by the length of the message, transmitted as a 
 64-bit big-endian unsigned integer.
 
-Messages are arrays of requests.
+Messages are arrays of requests or responses.
 
 - Requests to Set key `K` to value `V` are sent as `[1, K, V]` 
 (where `K` and `V` are binary arrays). 
