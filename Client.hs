@@ -18,7 +18,7 @@ connectTo server = Net.connectTo server (Net.PortNumber 9999)
 
 
 main = Net.withSocketsDo $ do
-	locks <- sequence [newEmptyMVar | _ <- [1..100]] -- 1000 threads
+	locks <- sequence [newEmptyMVar | _ <- [1..100]] -- 100 threads
 	threads <- sequence [forkIO (testWith lock) | lock <- locks]
 	sequence_ [takeMVar lock | lock <- locks] -- Wait for threads to finish
 
