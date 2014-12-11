@@ -13,7 +13,7 @@ import Data.Vector (Vector, fromList, (!))
 import Data.Hashable (hash)
 import Data.Bits ((.&.))
 
-newtype DataStore k v = DataStore {mapsOf :: Vector (TMVar (Map.Map k v))}
+newtype DataStore k v = DataStore (Vector (TMVar (Map.Map k v)))
 
 createStore :: STM (DataStore k v)
 createStore = do

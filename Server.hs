@@ -45,10 +45,10 @@ processCommand client store = do
 		Left err -> return (Left err)
 		Right commands -> do
 			sequence [atomically (insert k v store) | Set k v <- commands]
-			results <- sequence [lookup k | Get k <- commands]
+			results <- sequence [lookup k store | Get k <- commands]
 			unless (null results) (netWrite client $ formatResponses $ results)
 			return (Right ())
-	where lookup k = do
+	where lookup k store = do
 		result <- atomically (get k store)
 		return $ case result of
 			Nothing -> NotFound k
