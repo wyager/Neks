@@ -35,7 +35,7 @@ handle :: Handle -> Store -> IO ()
 handle client store = do
 	result <- processCommand client store
 	case result of
-		Right success -> (handle client store)
+		Right success -> handle client store
 		Left failure -> return () -- print failure -- Error reporting
 
 processCommand :: Handle -> Store -> IO (Either String ())
@@ -46,7 +46,7 @@ processCommand client store = do
 		Right commands -> do
 			sequence [atomically (insert k v store) | Set k v <- commands]
 			results <- sequence [lookup k store | Get k <- commands]
-			unless (null results) (netWrite client $ formatResponses $ results)
+			unless (null results) (netWrite client $ formatResponses results)
 			return (Right ())
 	where lookup k store = do
 		result <- atomically (get k store)

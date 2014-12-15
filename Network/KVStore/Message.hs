@@ -36,5 +36,5 @@ response _ = Left "Incorrect response type"
 
 parse :: (Object -> Either String a) -> ByteString -> Either String [a]
 parse parser bs = case decode bs of
-	Right (ObjectArray responses) -> sequence (map parser responses)
+	Right (ObjectArray messages) -> sequence (map parser messages)
 	error -> Left "Response decode failure"
