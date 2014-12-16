@@ -2,10 +2,11 @@ module Network.KVStore.DataStore (
 	DataStore,
 	createStore,
 	insert,
-	get
+	get,
+	delete
 ) where
 
-import qualified Data.Map.Strict as Map (Map, empty, insert, lookup)
+import qualified Data.Map.Strict as Map
 import Control.Concurrent.STM (STM)
 import Control.Concurrent.STM.TMVar (TMVar, newTMVar, takeTMVar, putTMVar, readTMVar)
 import Data.Hashable (Hashable, hash)
@@ -30,3 +31,9 @@ get k (DataStore maps) = do
 	let atomicMap = maps ! (hash k .&. 0xFF)
 	map <- readTMVar atomicMap
 	return (Map.lookup k map)
+
+delete :: (Hashable k, Ord k) => k -> DataStore k v -> STM ()
+delete k (DataStore maps) = do
+	let atomicMap = maps ! (hash k .&. 0xFF)
+	map <- takeTMVar atomicMap
+	putTMVar atomicMap $! Map.delete k map

@@ -10,8 +10,8 @@ import Control.Concurrent.STM (STM, atomically)
 import Network.KVStore.NetPack (netRead, netWrite)
 import Network.KVStore.Exception (handleWith, timeout)
 import Network.KVStore.Message (parseRequests, formatResponses)
-import Network.KVStore.DataStore (DataStore, createStore, insert, get)
-import Network.KVStore.Actions (Request(Set, Get, Atomic), Reply(Found, NotFound))
+import Network.KVStore.DataStore (DataStore, createStore, insert, get, delete)
+import Network.KVStore.Actions (Request(Set, Get, Delete, Atomic), Reply(Found, NotFound))
 
 type Store = DataStore ByteString ByteString
 
@@ -57,6 +57,9 @@ processWith store (Get k) = do
 	return $ case result of
 		Nothing -> [NotFound k]
 		Just v -> [Found k v]
+processWith store (Delete k) = do
+	delete k store
+	return []
 processWith store (Atomic requests) = do
 	results <- mapM (processWith store) requests
 	return (concat results)
