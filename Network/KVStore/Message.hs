@@ -6,35 +6,37 @@ module Network.KVStore.Message (
 ) where
 
 import Data.ByteString (ByteString)
-import Network.KVStore.Actions (Request(Set, Get), Reply(Found, NotFound))
-import Data.Serialize (encode, decode)
+import Network.KVStore.Actions (Request(Set, Get, Atomic), Reply(Found, NotFound))
+import qualified Data.Serialize as Serialize
 import Data.MessagePack (Object(ObjectArray, ObjectInt, ObjectBinary))
+import Control.Applicative ((<$>))
 
 formatRequests :: [Request] -> ByteString
-formatRequests = encode . ObjectArray . map (ObjectArray . format)
-	where format request = case request of
-		Set k v -> [ObjectInt 1, ObjectBinary k, ObjectBinary v]
-		Get k   -> [ObjectInt 0, ObjectBinary k]
+formatRequests = Serialize.encode . ObjectArray . map format
+	where format request = ObjectArray $ case request of
+		Get k   		-> [ObjectInt 0, ObjectBinary k]
+		Set k v 		-> [ObjectInt 1, ObjectBinary k, ObjectBinary v]
+		Atomic requests -> [ObjectInt 2, ObjectArray (map format requests)]
 
 formatResponses :: [Reply] -> ByteString
-formatResponses = encode . ObjectArray . map (ObjectArray . format)
+formatResponses = Serialize.encode . ObjectArray . map (ObjectArray . format)
 	where format response = case response of
 		Found k v  -> [ObjectInt (-1), ObjectBinary k, ObjectBinary v]
 		NotFound k -> [ObjectInt (-2), ObjectBinary k]
 
+decode bs = case Serialize.decode bs of
+	Right (ObjectArray messages) -> Right messages
+	error -> Left "Response decode failure"
+
 parseRequests :: ByteString -> Either String [Request]
-parseRequests = parse request
-request (ObjectArray [ObjectInt 0, ObjectBinary k]) = Right (Get k)
-request (ObjectArray [ObjectInt 1, ObjectBinary k, ObjectBinary v]) = Right (Set k v)
-request _ = Left "Invalid request structure"
+parseRequests bs = decode bs >>= mapM parse where
+	parse (ObjectArray [ObjectInt 0, ObjectBinary k]) = Right (Get k)
+	parse (ObjectArray [ObjectInt 1, ObjectBinary k, ObjectBinary v]) = Right (Set k v)
+	parse (ObjectArray [ObjectInt 2, ObjectArray requests]) = Atomic <$> mapM parse requests
+	parse _ = Left "Invalid request structure"
 
 parseResponses :: ByteString -> Either String [Reply]
-parseResponses = parse response
-response (ObjectArray [ObjectInt (-1), ObjectBinary k, ObjectBinary v]) = Right (Found k v)
-response (ObjectArray [ObjectInt (-2), ObjectBinary k]) = Right (NotFound k)
-response _ = Left "Incorrect response type"
-
-parse :: (Object -> Either String a) -> ByteString -> Either String [a]
-parse parser bs = case decode bs of
-	Right (ObjectArray messages) -> sequence (map parser messages)
-	error -> Left "Response decode failure"
+parseResponses bs = decode bs >>= mapM parse where
+	parse (ObjectArray [ObjectInt (-1), ObjectBinary k, ObjectBinary v]) = Right (Found k v)
+	parse (ObjectArray [ObjectInt (-2), ObjectBinary k]) = Right (NotFound k)
+	parse _ = Left "Incorrect response type"

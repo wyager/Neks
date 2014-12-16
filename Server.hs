@@ -3,15 +3,16 @@ module Main where
 import qualified Network as Net
 import System.IO (Handle, hClose)
 import Data.ByteString (ByteString)
+import Control.Applicative ((<$>))
 import Control.Monad (forever, unless)
 import Control.Exception (catch, finally) 
-import Control.Concurrent.STM (atomically)
 import Control.Concurrent (ThreadId, forkIO)
+import Control.Concurrent.STM (STM, atomically)
 import Network.KVStore.NetPack (netRead, netWrite)
 import Network.KVStore.Exception (handleWith, timeout)
 import Network.KVStore.Message (parseRequests, formatResponses)
 import Network.KVStore.DataStore (DataStore, createStore, insert, get)
-import Network.KVStore.Actions (Request(Set, Get), Reply(Found, NotFound))
+import Network.KVStore.Actions (Request(Set, Get, Atomic), Reply(Found, NotFound))
 
 type Store = DataStore ByteString ByteString
 
@@ -33,23 +34,30 @@ wait sock store = do
 
 handle :: Handle -> Store -> IO ()
 handle client store = do
-	result <- processCommand client store
+	result <- processRequests client store
 	case result of
 		Right success -> handle client store
 		Left failure -> return () -- print failure -- Error reporting
 
-processCommand :: Handle -> Store -> IO (Either String ())
-processCommand client store = do
-	commandData <- netRead client
-	case commandData >>= parseRequests of
+processRequests :: Handle -> Store -> IO (Either String ())
+processRequests client store = do
+	requestData <- netRead client
+	case requestData >>= parseRequests of
 		Left err -> return (Left err)
-		Right commands -> do
-			sequence [atomically (insert k v store) | Set k v <- commands]
-			results <- sequence [lookup k store | Get k <- commands]
+		Right requests -> do
+			results <- concat <$> mapM (atomically . processWith store) requests
 			unless (null results) (netWrite client $ formatResponses results)
 			return (Right ())
-	where lookup k store = do
-		result <- atomically (get k store)
-		return $ case result of
-			Nothing -> NotFound k
-			Just v -> Found k v
+
+processWith :: Store -> Request -> STM [Reply]
+processWith store (Set k v) = do
+	insert k v store
+	return []
+processWith store (Get k) = do
+	result <- get k store
+	return $ case result of
+		Nothing -> [NotFound k]
+		Just v -> [Found k v]
+processWith store (Atomic requests) = do
+	results <- mapM (processWith store) requests
+	return (concat results)
