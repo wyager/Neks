@@ -3,7 +3,6 @@ module Main where
 import qualified Network as Net
 import System.IO (Handle, hClose)
 import Data.ByteString (ByteString)
-import Control.Applicative ((<$>))
 import Control.Monad (forever, unless)
 import Control.Exception (catch, finally) 
 import Control.Concurrent (ThreadId, forkIO)
@@ -45,8 +44,8 @@ processRequests client store = do
 	case requestData >>= parseRequests of
 		Left err -> return (Left err)
 		Right requests -> do
-			results <- concat <$> mapM (atomically . processWith store) requests
-			unless (null results) (netWrite client $ formatResponses results)
+			results <- mapM (atomically . processWith store) requests
+			netWrite client . formatResponses . concat $ results
 			return (Right ())
 
 processWith :: Store -> Request -> STM [Reply]
