@@ -22,6 +22,10 @@ class Delete():
 		assert(type(key) == bytes)
 		self.formatted = [2, key]
 
+class Atomic():
+	def __init__(self, requests):
+		self.formatted = [3, [r.formatted for r in requests]]
+
 class Found():
 	def __init__(self, key, value):
 		self.key = key

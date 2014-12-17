@@ -3,7 +3,7 @@ KVStore
 
 ##### A dead simple key/value store
 
-KVStore is an in-memory key/value store written in 175 lines of Haskell. (150 lines without empty lines!)
+KVStore is an in-memory key/value store written in 180 lines of Haskell. (160 lines without empty lines!)
 
 It's highly concurrent and pretty fast.
 
@@ -30,10 +30,10 @@ To run the Python client:
 Running the server with 2 cores and a client with
 
 - 100 threads
-- 500 reads and 500 writes per thread
-- 50 key/value pairs per read/write
+- 500 requests per thread
+- 50 reads and 50 writes per request
 
-takes ~4.3 seconds on my laptop. That's `(100*500*2*50)/4.3 = 1,162,790` transactions per second.
+takes ~4.3 seconds on my laptop. That's `(100*500*50*2)/4.3 = 1,162,790` transactions per second.
 
 ##### Protocol:
 
@@ -42,18 +42,24 @@ All network encoding is done using [msgpack](http://msgpack.org).
 Messages are preceded by the length of the message, transmitted as a 
 64-bit big-endian unsigned integer.
 
-Messages are arrays of requests or responses.
+The client sends requests to the server, and the server responds with the results of the requests.
 
-- Requests to Set key `K` to value `V` are sent as `[1, K, V]` 
-(where `K` and `V` are binary arrays). 
-- Requests to Get key `K` are sent as `[0, K]`. The server sends a response.
-- If the value `V` of requested key `K` is found, the response is `[-1, K, V]`.
-- If the value of requested key `K` is not found, the response is `[-2, K]`.
+There are 4 kinds of requests:
+
+- Requests to Get key `K`. These are formatted as `[0, K]`. The server sends a response.
+- Requests to Set key `K` to value `V`. These are formatted as `[1, K, V]`. The server does not send a response.
+- Requests to Delete key `K`. These are formatted as `[2, K]`. The server does not send a response.
+- Requests to Atomically evaluate a list of requests `R`. This formatted as `[3, R]`. The server sends the response as if all requests in `R` had been evaluated normally.
+
+There are 2 kinds of responses:
+
+- Response that the value `V` for requested key `K` was found. This is formatted as `[-1, K, V]`.
+- Response that the value `V` for requested key `K` was not found. This is formatted as `[-2, K]`.
 
 Example conversation:
 
-    Client: <64-bit big-endian length>[[1,"status","OK"],[0,"Jim"],[0,"Dwight"]]
-    Server: <64-bit big-endian length>[[-1,"Jim","Halpert"],[-1,"Dwight","Schrute"]]
+    Client: <message length>[[1,"status","OK"],[0,"Jim"],[0,"Dwight"]]
+    Server: <message length>[[-1,"Jim","Halpert"],[-1,"Dwight","Schrute"]]
 
 The key is sent back with the response to facilitate easier asynchronous
 programming on the client end.

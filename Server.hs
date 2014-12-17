@@ -4,11 +4,10 @@ import qualified Network as Net
 import System.IO (Handle, hClose)
 import Data.ByteString (ByteString)
 import Control.Monad (forever, unless)
-import Control.Exception (catch, finally) 
 import Control.Concurrent (ThreadId, forkIO)
 import Control.Concurrent.STM (STM, atomically)
+import Control.Exception (SomeException, catch, finally) 
 import Network.KVStore.NetPack (netRead, netWrite)
-import Network.KVStore.Exception (handleWith, timeout)
 import Network.KVStore.Message (parseRequests, formatResponses)
 import Network.KVStore.DataStore (DataStore, createStore, insert, get, delete)
 import Network.KVStore.Actions (Request(Set, Get, Delete, Atomic), Reply(Found, NotFound))
@@ -28,8 +27,11 @@ serve store = Net.withSocketsDo $ do
 wait :: Net.Socket -> Store -> IO ThreadId
 wait sock store = do
 	(client, _, _) <- Net.accept sock
-	let run = (handle client store `finally` hClose client) `catch` handleWith (return ())
-	forkIO run -- $ timeout 10 run >> return ()
+	forkIO (run client)
+	where
+	run client = (handle client store `finally` hClose client) `catch` exceptionHandler
+	exceptionHandler :: SomeException -> IO ()
+	exceptionHandler exception = return ()
 
 handle :: Handle -> Store -> IO ()
 handle client store = do

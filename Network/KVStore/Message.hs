@@ -25,7 +25,6 @@ formatResponses = Serialize.encode . ObjectArray . map (ObjectArray . format)
 		Found k v  -> [ObjectInt (-1), ObjectBinary k, ObjectBinary v]
 		NotFound k -> [ObjectInt (-2), ObjectBinary k]
 
-
 decode bs = case Serialize.decode bs of
 	Right (ObjectArray messages) -> Right messages
 	error -> Left "Response decode failure"

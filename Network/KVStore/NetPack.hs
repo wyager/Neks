@@ -4,7 +4,6 @@ module Network.KVStore.NetPack (
 ) where
 
 import Data.ByteString as BS (ByteString, hGet, length, hPut, append)
-import Network.KVStore.Exception (handleWith)
 import Data.Serialize (encode, decode)
 import Control.Exception (catch)
 import System.IO (Handle)
