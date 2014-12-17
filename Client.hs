@@ -23,7 +23,7 @@ testWith :: MVar () -> IO ()
 testWith lock = do
 	server <- Net.connectTo "0.0.0.0" (Net.PortNumber 9999)
 	sequence_ $ replicate 500 $ do
-		let requests = [Set k v | (k, v) <- zip testKeys testValues] ++ [Get key | key <- testKeys]
+		let requests = [Set k v | (k, v) <- zip testKeys testValues] ++ [Get k | k <- testKeys]
 		responses <- request server requests
 		when (responses /= Right [Found v | v <- testValues]) (error "Bad response")
 	putMVar lock ()
