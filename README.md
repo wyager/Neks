@@ -53,13 +53,10 @@ There are 4 kinds of requests:
 
 There are 2 kinds of responses:
 
-- Response that the value `V` for requested key `K` was found. This is formatted as `[-1, K, V]`.
-- Response that the value `V` for requested key `K` was not found. This is formatted as `[-2, K]`.
+- Response that the value `V` for requested key `K` was found. This is formatted as `[-1, V]`.
+- Response that the value `V` for requested key `K` was not found. This is formatted as `[-2]`.
 
 Example conversation:
 
     Client: <message length>[[1,"status","OK"],[0,"Jim"],[0,"Dwight"]]
-    Server: <message length>[[-1,"Jim","Halpert"],[-1,"Dwight","Schrute"]]
-
-The key is sent back with the response to facilitate easier asynchronous
-programming on the client end.
+    Server: <message length>[[-1,"Halpert"],[-1,"Schrute"]]
