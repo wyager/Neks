@@ -27,11 +27,12 @@ testWith lock = do
 		responses <- request server requests
 		when (responses /= Right [Found k v | (k, v) <- zip testKeys testValues]) (error "Bad response")
 	putMVar lock ()
-	where
-	request server requests = do
-		netWrite server $ formatRequests requests
-		responseData <- netRead server
-		return (responseData >>= parseResponses)
+
+request :: Handle -> [Request] -> IO (Either String [Reply])
+request server requests = do
+	netWrite server $ formatRequests requests
+	responseData <- netRead server
+	return (responseData >>= parseResponses)
 		
 
 testKeys = ["66991fb944", "afe0c0261a", "a4242d5dda", "d10db90845", "4384ecbfe", "a839702a82", "1ed8680b95", "0d2189d279", "f4b0795239", "a24d4e7e87", "28e24e1d51", "9bb0dfbfbd", "9776bad265", "89f79a8c71", "d50de7c1cd", "167a350f93", "36f41a6205", "f5bbd3bc20", "69a3d20bef", "33644bede7", "8744571558", "cd4ab79d3a", "8c26e6936c", "88c1d42e4e", "f31d532d05", "a9ad46aea2", "e9b0aeee64", "dffc6a25af", "90952b9dd", "04a136756e", "31ca38445e", "21c27b172", "5c09e01c46", "9b23b5ef27", "a9fd5ea170", "aa1718e735", "1ce6781a57", "a927b0584e", "e7aea00872", "52223f7078", "e620de282a", "1a4c71def8", "75bd1abc65", "af93442708", "2257127db4", "68ec4b4f7", "9b5473f839", "d453871c0f", "9657631a3d", "95503a22b9"]
