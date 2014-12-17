@@ -22,8 +22,8 @@ formatRequests = Serialize.encode . ObjectArray . map format
 formatResponses :: [Reply] -> ByteString
 formatResponses = Serialize.encode . ObjectArray . map (ObjectArray . format)
 	where format response = case response of
-		Found k v  -> [ObjectInt (-1), ObjectBinary k, ObjectBinary v]
-		NotFound k -> [ObjectInt (-2), ObjectBinary k]
+		Found v  -> [ObjectInt (-1), ObjectBinary v]
+		NotFound -> [ObjectInt (-2)]
 
 decode bs = case Serialize.decode bs of
 	Right (ObjectArray messages) -> Right messages
@@ -39,6 +39,6 @@ parseRequests bs = decode bs >>= mapM parse where
 
 parseResponses :: ByteString -> Either String [Reply]
 parseResponses bs = decode bs >>= mapM parse where
-	parse (ObjectArray [ObjectInt (-1), ObjectBinary k, ObjectBinary v]) = Right (Found k v)
-	parse (ObjectArray [ObjectInt (-2), ObjectBinary k]) = Right (NotFound k)
+	parse (ObjectArray [ObjectInt (-1), ObjectBinary v]) = Right (Found v)
+	parse (ObjectArray [ObjectInt (-2)]) = Right (NotFound)
 	parse _ = Left "Incorrect response type"

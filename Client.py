@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Exports Server(host, port) with method send(request) and sendmany([requests])
 # as well as the request types Set(k, v), Get(k), and Delete(k)
-# and the response types Found(k, v) and NotFound(k)
+# and the response types Found(v) and NotFound()
 import msgpack
 import socket
 import struct
@@ -27,17 +27,14 @@ class Atomic():
 		self.formatted = [3, [r.formatted for r in requests]]
 
 class Found():
-	def __init__(self, key, value):
-		self.key = key
+	def __init__(self, value):
 		self.value = value
 	def __repr__(self):
-		return "Found k/v pair {} : {}".format(self.key, self.value)
+		return "Found value : {}".format(self.value)
 
 class NotFound():
-	def __init__(self, key):
-		self.key = key
 	def __repr__(self):
-		return "Couldn't find value for key {}".format(self.key)
+		return "Couldn't find value"
 
 def netFmt(msg):
 	length = len(msg)
@@ -66,9 +63,9 @@ def parseResponse(responseData):
 	responses = msgpack.unpackb(responseData)
 	def toResponse(message):
 		if message[0] == -1:
-			return Found(message[1], message[2])
+			return Found(message[1])
 		elif message[0] == -2:
-			return NotFound(message[1])
+			return NotFound()
 		else:
 			raise Exception("Invalid response structure")
 	return [toResponse(r) for r in responses]
@@ -100,4 +97,3 @@ if __name__ == '__main__':
 		responses = server.sendmany(sets + gets)
 		for i,response in enumerate(responses):
 			assert(response.value == testValues[i])
-			assert(response.key == testKeys[i])

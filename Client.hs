@@ -25,7 +25,7 @@ testWith lock = do
 	sequence_ $ replicate 500 $ do
 		let requests = [Set k v | (k, v) <- zip testKeys testValues] ++ [Get key | key <- testKeys]
 		responses <- request server requests
-		when (responses /= Right [Found k v | (k, v) <- zip testKeys testValues]) (error "Bad response")
+		when (responses /= Right [Found v | v <- testValues]) (error "Bad response")
 	putMVar lock ()
 
 request :: Handle -> [Request] -> IO (Either String [Reply])

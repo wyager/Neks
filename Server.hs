@@ -57,8 +57,8 @@ processWith store (Set k v) = do
 processWith store (Get k) = do
 	result <- get k store
 	return $ case result of
-		Nothing -> [NotFound k]
-		Just v -> [Found k v]
+		Nothing -> [NotFound]
+		Just v -> [Found v]
 processWith store (Delete k) = do
 	delete k store
 	return []
