@@ -70,6 +70,14 @@ def parseResponse(responseData):
 			raise Exception("Invalid response structure")
 	return [toResponse(r) for r in responses]
 
+def spam(server):
+	f = open("/dev/urandom","rb")
+	for i in range(5000):
+		requests = [Set(f.read(10), f.read(10)) for i in range(1000)]
+		server.sendmany(requests)
+		if i % 50 == 0:
+			print("{} complete".format(i/5000))
+
 class Server():
 	def __init__(self, host, port):
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
