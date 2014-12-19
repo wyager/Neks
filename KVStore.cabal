@@ -19,7 +19,7 @@ executable KVClient
   main-is: Client.hs           
   -- other-modules:       
   -- other-extensions:    
-  build-depends:       base >=4.7 && <4.8,
+  build-depends:       base >=4.6 && <4.8,
                        messagepack >= 0.2.1,
                        bytestring >= 0.10.4.0,
                        cereal >= 0.4.1.0,
@@ -38,7 +38,7 @@ executable KVServer
   main-is: Server.hs           
   -- other-modules:       
   -- other-extensions:    
-  build-depends:       base >=4.7 && <4.8,
+  build-depends:       base >=4.6 && <4.8,
                        messagepack >= 0.2.1,
                        bytestring >= 0.10.4.0,
                        cereal >= 0.4.1.0,
