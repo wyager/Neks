@@ -3,3 +3,5 @@ dist/*
 *.hi
 *.o
 cabal.sandbox.config
+__pycache__
+*~
