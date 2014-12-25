@@ -8,7 +8,7 @@ KVStore is an in-memory key/value store written in ~200 lines of Haskell.
 ##### Features
 
 - Very simple
-- Pretty darn fast (1M+ transactions per second)
+- Pretty darn fast (>1M transactions per second is easy, see [Benchmark](https://github.com/wyager/KVStore#benchmark))
 - Highly concurrent 
 - Atomic transactions (e.g. atomic read-and-swap)
 - Optional disk persistence (with atomic snapshotting)
