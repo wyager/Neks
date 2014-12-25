@@ -4,24 +4,31 @@ import qualified Network as Net
 import System.IO (Handle, hClose)
 import Data.ByteString (ByteString)
 import Control.Monad (forever, unless)
-import Control.Concurrent (ThreadId, forkIO, threadDelay)
 import Control.Concurrent.STM (STM, atomically)
+import Control.Concurrent (ThreadId, forkIO, threadDelay)
 import Control.Exception (SomeException, catch, finally) 
+import Network.KVStore.Disk (saveTo, loadFrom)
 import Network.KVStore.NetPack (netRead, netWrite)
 import Network.KVStore.Message (parseRequests, formatResponses)
 import Network.KVStore.DataStore (DataStore, createStore, insert, get, delete)
 import Network.KVStore.Actions (Request(Set, Get, Delete, Atomic), Reply(Found, NotFound))
-import Network.KVStore.Disk (saveTo, loadFrom)
 
 type Store = DataStore ByteString ByteString
 
+-- With disk persistence:
 main = do
-	globalStore <- loadFrom "store.kvs" >>= \loaded -> case loaded of
+	loaded <- loadFrom "store.kvs"
+	globalStore <- case loaded of
 		Just store -> return store
 		Nothing -> atomically createStore
 	let periodically action = forever (threadDelay (30*1000*1000) >> action)
 	forkIO $ periodically (saveTo "store.kvs" globalStore)
 	serve globalStore
+
+-- Without disk persistence: 
+-- main = do
+--     globalStore <- atomically createStore
+--     serve globalStore
 
 serve :: Store -> IO ()
 serve store = Net.withSocketsDo $ do
