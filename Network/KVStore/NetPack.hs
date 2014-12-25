@@ -1,11 +1,7 @@
-module Network.KVStore.NetPack (
-	netWrite,
-	netRead
-) where
+module Network.KVStore.NetPack (netWrite, netRead) where
 
 import Data.ByteString as BS (ByteString, hGet, length, hPut, append)
 import Data.Serialize (encode, decode)
-import Control.Exception (catch)
 import System.IO (Handle)
 import Data.Word (Word64)
 

@@ -1,8 +1,6 @@
 module Network.KVStore.Message (
-	parseRequests,
-	formatRequests,
-	parseResponses,
-	formatResponses
+	parseRequests, formatRequests,
+	parseResponses, formatResponses
 ) where
 
 import Data.ByteString (ByteString)
@@ -40,5 +38,5 @@ parseRequests bs = decode bs >>= mapM parse where
 parseResponses :: ByteString -> Either String [Reply]
 parseResponses bs = decode bs >>= mapM parse where
 	parse (ObjectArray [ObjectInt (-1), ObjectBinary v]) = Right (Found v)
-	parse (ObjectArray [ObjectInt (-2)]) = Right (NotFound)
+	parse (ObjectArray [ObjectInt (-2)]) = Right NotFound
 	parse _ = Left "Incorrect response type"
