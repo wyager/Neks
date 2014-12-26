@@ -1,9 +1,9 @@
 KVStore
 =======
 
-##### A dead simple key/value store
+##### A dead simple key/value server
 
-KVStore is an in-memory key/value store written in ~200 lines of Haskell.
+KVStore is an in-memory key/value server written in ~200 lines of Haskell.
 
 ##### Features
 
