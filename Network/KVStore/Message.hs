@@ -18,8 +18,8 @@ formatRequests = Serialize.encode . ObjectArray . map format
 		Atomic requests -> [ObjectInt 3, ObjectArray (map format requests)]
 
 formatResponses :: [Reply] -> ByteString
-formatResponses = Serialize.encode . ObjectArray . map (ObjectArray . format)
-	where format response = case response of
+formatResponses = Serialize.encode . ObjectArray . map format
+	where format response = ObjectArray $ case response of
 		Found v  -> [ObjectInt (-1), ObjectBinary v]
 		NotFound -> [ObjectInt (-2)]
 
