@@ -8,21 +8,21 @@ import System.Directory (renameFile, doesFileExist)
 import Data.Serialize (Serialize, encode, decode)
 import Control.Applicative ((<$>))
 
-saveToHandle :: (Serialize a, Ord a, Serialize b) => Handle -> DataStore a b -> IO ()
-saveToHandle handle store = do
-	maps <- atomically (dump store)
-	sequence_ [netWrite handle (encode map) | map <- maps]
+saveTo :: (Serialize a, Ord a, Serialize b) => String -> DataStore a b -> IO ()
 saveTo path store = do
 	withFile (path ++ "~") WriteMode (`saveToHandle` store)
 	renameFile (path ++ "~") path
+saveToHandle handle store = do
+	maps <- atomically (dump store)
+	sequence_ [netWrite handle (encode map) | map <- maps]
 
-loadFromHandle :: (Serialize a, Ord a, Serialize b) => Handle -> IO (DataStore a b)
+loadFrom :: (Serialize a, Ord a, Serialize b) => String -> IO (Maybe (DataStore a b))
+loadFrom path = doesFileExist path >>= \exists -> if exists
+	then Just <$> withFile path ReadMode loadFromHandle
+	else return Nothing
 loadFromHandle handle = do
 	maps <- sequence . replicate 4096 $ do
 		mapData <- netRead handle
 		let Right map = mapData >>= decode
 		return map
 	atomically (load maps)
-loadFrom path = doesFileExist path >>= \exists -> if exists
-	then Just <$> withFile path ReadMode loadFromHandle
-	else return Nothing
