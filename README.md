@@ -18,14 +18,14 @@ KVStore is an in-memory key/value server written in ~200 lines of Haskell.
     cabal sandbox init
     cabal install --only-dependencies
     cabal run KVServer
-    cabal run KVClient
+    cabal run KVClient -- <args>
 
 or, with dependencies installed:
 
     ghc -O2 -threaded Client.hs
     ghc -O2 -threaded Server.hs
     ./Server +RTS -N<number of cores>
-    ./Client +RTS -N<number of cores>
+    ./Client <args>
 
 To run the Python client:
 
