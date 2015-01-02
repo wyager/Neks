@@ -55,7 +55,7 @@ There are 4 kinds of requests:
 - Requests to Get key `K`. These are formatted as `[0, K]`. The server sends a response.
 - Requests to Set key `K` to value `V`. These are formatted as `[1, K, V]`. The server does not send a response.
 - Requests to Delete key `K`. These are formatted as `[2, K]`. The server does not send a response.
-- Requests to Atomically evaluate a list of requests `R`. This formatted as `[3, R]`. The server sends the response as if all requests in `R` had been evaluated normally.
+- Requests to Atomically evaluate a list of requests `R`. This is formatted as `[3, R]`. The server sends the response as if all requests in `R` had been evaluated normally.
 
 There are 2 kinds of responses:
 
