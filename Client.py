@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
 # Exports Server(host, port) with method send(request) and sendmany([requests])
-# as well as the request types Set(k, v), Get(k), and Delete(k)
-# and the response types Found(v) and NotFound()
+# as well as the request types Set(k, v), Get(k), Delete(k), and Atomic(reqs)
+# send and sendmany return a list representing the server's response.
+# None represents NotFound.
+
 import msgpack
 import socket
 import struct
+
+class Get():
+	def __init__(self, key):
+		assert(type(key) == bytes)
+		self.formatted = [0, key]
 
 class Set():
 	def __init__(self, key, value):
 		assert(type(key) == bytes)
 		assert(type(value) == bytes)
 		self.formatted = [1, key, value]
-
-class Get():
-	def __init__(self, key):
-		assert(type(key) == bytes)
-		self.formatted = [0, key]
 
 class Delete():
 	def __init__(self, key):
@@ -25,16 +27,6 @@ class Delete():
 class Atomic():
 	def __init__(self, requests):
 		self.formatted = [3, [r.formatted for r in requests]]
-
-class Found():
-	def __init__(self, value):
-		self.value = value
-	def __repr__(self):
-		return "Found value : {}".format(self.value)
-
-class NotFound():
-	def __repr__(self):
-		return "Couldn't find value"
 
 def netFmt(msg):
 	length = len(msg)
@@ -58,14 +50,13 @@ def netRead(sock):
 	length = struct.unpack(">Q", length_data)[0]
 	return recvall(sock, length)
 
-
 def parseResponse(responseData):
 	responses = msgpack.unpackb(responseData)
 	def toResponse(message):
 		if message[0] == -1:
-			return Found(message[1])
+			return message[1]
 		elif message[0] == -2:
-			return NotFound()
+			return None
 		else:
 			raise Exception("Invalid response structure")
 	return [toResponse(r) for r in responses]
@@ -95,13 +86,14 @@ testValues = [b"5e7a195e90", b"accdfc69c4", b"43be950623", b"afed0a6890", b"0d23
 
 if __name__ == '__main__':
 	server = Server("0.0.0.0",9999)
+
 	server.send(Set(b"hello", b"goodbye"))
 	print(server.send(Get(b"hello")))
 	server.send(Delete(b"hello"))
 	print(server.send(Get(b"hello")))
+
 	sets = [Set(k,v) for (k,v) in zip(testKeys, testValues)]
 	gets = [Get(k) for k in testKeys]
 	for i in range(10000):
 		responses = server.sendmany(sets + gets)
-		for i,response in enumerate(responses):
-			assert(response.value == testValues[i])
+		assert(responses == testValues)
