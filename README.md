@@ -33,13 +33,25 @@ To run the Python client:
 
 ##### Benchmark:
 
-Running the server with 2 cores and a client with
+The server runs on two cores. The client runs
 
-- 100 threads
-- 500 requests per thread
+- 50 threads
+- 200 requests per thread
 - 50 reads and 50 writes per request
 
-takes ~4.3 seconds on my laptop. That's `(100*500*50*2)/4.3 = 1,162,790` transactions per second.
+Speed is generally latency-bounded. Here's what I get on my home machines:
+
+| Avg. Latency | Transactions / Second |
+| .1ms (localhost) | 1,150,000 |
+| 60ms (two wireless hops) | 110,000 |
+
+takes ~.88 seconds on my laptop. That's about 1,150,000 transactions per second.
+
+Of course, this doesn't take into account network topology.
+
+On a network with 10m
+
+On a network with 60ms average round-trip latency, I get around 110,000 transactions per second.
 
 ##### Protocol:
 

@@ -50,14 +50,14 @@ get k server = do
 
 test :: String -> Net.PortID -> IO ()
 test host port = do
-	putStrLn "Spawning 100 threads x 500 requests x 100 transactions"
-	locks <- sequence [newEmptyMVar | _ <- [1..100]] -- 100 threads
+	putStrLn "Spawning 50 threads x 200 requests x 100 transactions"
+	locks <- sequence [newEmptyMVar | _ <- [1..50]] -- 50 threads
 	threads <- sequence [forkIO (testWith lock host port) | lock <- locks]
 	sequence_ [takeMVar lock | lock <- locks] -- Wait for threads to finish
 	putStrLn "Test complete"
 	where testWith lock host port = do
 		server <- Net.connectTo host port
-		sequence . replicate 500 $ do
+		sequence . replicate 200 $ do
 			let requests = [Set k v | (k, v) <- zip testKeys testValues] ++ [Get k | k <- testKeys]
 			responses <- request server requests
 			when (responses /= Right [Found v | v <- testValues]) (error "Bad response")
