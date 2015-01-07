@@ -42,16 +42,9 @@ The server runs on two cores. The client runs
 Speed is generally latency-bounded. Here's what I get on my home machines:
 
 | Avg. Latency | Transactions / Second |
-| .1ms (localhost) | 1,150,000 |
+---------------|------------------------
+| .1ms (localhost)  | 1,150,000 |
 | 60ms (two wireless hops) | 110,000 |
-
-takes ~.88 seconds on my laptop. That's about 1,150,000 transactions per second.
-
-Of course, this doesn't take into account network topology.
-
-On a network with 10m
-
-On a network with 60ms average round-trip latency, I get around 110,000 transactions per second.
 
 ##### Protocol:
 
