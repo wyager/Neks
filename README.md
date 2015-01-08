@@ -44,7 +44,8 @@ Speed is generally latency-bounded. Here's what I get on my home machines:
 | Avg. Latency | Transactions / Second |
 ---------------|------------------------
 | .1ms (localhost)  | 1,150,000 |
-| 60ms (two wireless hops) | 110,000 |
+| 3.5ms | 500,000 |
+| 60ms  | 110,000 |
 
 ##### Protocol:
 
