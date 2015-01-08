@@ -8,7 +8,7 @@ Neks is an in-memory networked key/value server written in ~200 lines of Haskell
 ##### Features
 
 - Very simple
-- Pretty darn fast (>1M transactions per second is easy, see [Benchmark](#benchmark))
+- Pretty fast (>1M transactions per second is easy, see [Benchmark](#benchmark))
 - Highly concurrent 
 - Atomic transactions (e.g. atomic read-and-swap)
 - Optional disk persistence (with atomic snapshotting)
