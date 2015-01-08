@@ -2,9 +2,9 @@
 
 module Main where
 
-import Network.KVStore.Message (formatRequests, parseResponses)
-import Network.KVStore.NetPack (netWrite, netRead)
-import Network.KVStore.Actions (Request(Set, Get, Delete, Atomic), Reply(Found, NotFound))
+import Network.Neks.Message (formatRequests, parseResponses)
+import Network.Neks.NetPack (netWrite, netRead)
+import Network.Neks.Actions (Request(Set, Get, Delete, Atomic), Reply(Found, NotFound))
 
 import qualified Network as Net
 import System.IO (Handle)

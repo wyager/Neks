@@ -1,9 +1,9 @@
-KVStore
+Neks
 =======
 
 ##### A dead simple key/value server
 
-KVStore is an in-memory key/value server written in ~200 lines of Haskell.
+Neks is an in-memory networked key/value server written in ~200 lines of Haskell.
 
 ##### Features
 
@@ -17,13 +17,13 @@ KVStore is an in-memory key/value server written in ~200 lines of Haskell.
 
     cabal sandbox init
     cabal install --only-dependencies
-    cabal run KVServer
-    cabal run KVClient -- <args>
+    cabal run Server
+    cabal run Client -- <args>
 
 or, with dependencies installed:
 
-    ghc -O2 -threaded Client.hs
     ghc -O2 -threaded Server.hs
+    ghc -O2 -threaded Client.hs
     ./Server +RTS -N<number of cores>
     ./Client <args>
 

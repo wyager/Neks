@@ -7,11 +7,11 @@ import Control.Monad (forever, unless)
 import Control.Concurrent.STM (STM, atomically)
 import Control.Concurrent (ThreadId, forkIO, threadDelay)
 import Control.Exception (SomeException, catch, finally) 
-import Network.KVStore.Disk (saveTo, loadFrom)
-import Network.KVStore.NetPack (netRead, netWrite)
-import Network.KVStore.Message (parseRequests, formatResponses)
-import Network.KVStore.DataStore (DataStore, createStore, insert, get, delete)
-import Network.KVStore.Actions (Request(Set, Get, Delete, Atomic), Reply(Found, NotFound))
+import Network.Neks.Disk (saveTo, loadFrom)
+import Network.Neks.NetPack (netRead, netWrite)
+import Network.Neks.Message (parseRequests, formatResponses)
+import Network.Neks.DataStore (DataStore, createStore, insert, get, delete)
+import Network.Neks.Actions (Request(Set, Get, Delete, Atomic), Reply(Found, NotFound))
 
 type Store = DataStore ByteString ByteString
 
