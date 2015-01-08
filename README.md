@@ -39,13 +39,13 @@ The server runs on two cores. The client runs
 - 200 requests per thread
 - 50 reads and 50 writes per request
 
-Speed is generally latency-bounded. Here's what I get on my home machines:
+Speed depends on latency and bandwidth. Here's what I get on my home machines:
 
 | Avg. Latency | Transactions / Second |
 ---------------|------------------------
 | .1ms (localhost)  | 1,150,000 |
 | 3.5ms | 500,000 |
-| 60ms  | 110,000 |
+| 40ms  | 110,000 |
 
 ##### Protocol:
 
