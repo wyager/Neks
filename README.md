@@ -5,6 +5,8 @@ Neks
 
 Neks is an in-memory networked key/value server written in ~200 lines of Haskell.
 
+It is intended to be very easy to modify.
+
 ##### Features
 
 - Very simple
