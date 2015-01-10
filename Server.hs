@@ -21,7 +21,7 @@ main = do
         globalStore <- case loaded of
                 Just store -> return store
                 Nothing -> atomically createStore
-        let periodically action = forever (threadDelay (30*1000*1000) >> action)
+        let periodically action = forever (threadDelay (30*10^6) >> action)
         forkIO $ periodically (saveTo "store.kvs" globalStore)
         serve globalStore
 
