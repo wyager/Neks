@@ -2,9 +2,9 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                Neks
-version:             0.2.0.0
+version:             0.3.0.0
 synopsis:            Simple networked key/value store
--- description:         
+description:         Neks is a fast, simple in-memory key/value server. 
 license:             MIT
 license-file:        LICENSE
 author:              William Yager
@@ -12,11 +12,15 @@ maintainer:          will.yager@gmail.com
 -- copyright:           
 category:            Database
 build-type:          Simple
--- extra-source-files:  
-cabal-version:       >=1.10
+extra-source-files:  Network/Neks/*.hs
+cabal-version:       >=1.10      
+
+source-repository head
+  type:     git
+  location: https://github.com/wyager/Neks.git
 
 executable Client
-  main-is: Client.hs           
+  main-is: Network/Neks/Client.hs           
   -- other-modules:       
   -- other-extensions:    
   build-depends:       base >=4.6 && <4.8,
@@ -29,14 +33,11 @@ executable Client
                        vector >= 0.10.9.1,
                        hashable >= 0.1.0.0,
                        directory >= 1.2.1.0
-
-
-  -- hs-source-dirs:      
   default-language:    Haskell2010
   ghc-options:         -O2
 
 executable Server
-  main-is: Server.hs           
+  main-is: Network/Neks/Server.hs           
   -- other-modules:       
   -- other-extensions:    
   build-depends:       base >=4.6 && <4.8,
@@ -49,7 +50,5 @@ executable Server
                        vector >= 0.10.9.1,
                        hashable >= 0.1.0.0,
                        directory >= 1.2.1.0
-
-  -- hs-source-dirs:      
   default-language:    Haskell2010
   ghc-options:         -O2 -threaded -with-rtsopts=-N2

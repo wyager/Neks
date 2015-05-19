@@ -23,16 +23,17 @@ main = do
                 Nothing -> atomically createStore
         let periodically action = forever (threadDelay (30*10^6) >> action)
         forkIO $ periodically (saveTo "store.kvs" globalStore)
-        serve globalStore
+        putStrLn "Serving on port 9999 \nSaving DB to store.kvs"
+        serve globalStore (Net.PortNumber 9999)
 
 -- Without disk persistence: 
 -- main = do
 --     globalStore <- atomically createStore
 --     serve globalStore
 
-serve :: Store -> IO ()
-serve store = Net.withSocketsDo $ do
-        sock <- Net.listenOn (Net.PortNumber 9999)
+serve :: Store -> Net.PortID -> IO ()
+serve store port = Net.withSocketsDo $ do
+        sock <- Net.listenOn port
         forever (wait sock store)
 
 wait :: Net.Socket -> Store -> IO ThreadId
