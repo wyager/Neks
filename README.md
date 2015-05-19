@@ -35,7 +35,7 @@ To run the Python client:
 
 ##### Benchmark:
 
-The server runs on two cores. The client runs
+The server and client run on two cores. The client runs
 
 - 50 threads
 - 200 requests per thread
@@ -46,8 +46,8 @@ Speed depends on latency and bandwidth. Here's what I get on my home machines:
 | Avg. Latency | Transactions / Second |
 ---------------|------------------------
 | .1ms (localhost)  | 1,150,000 |
-| 3.5ms | 500,000 |
-| 40ms  | 110,000 |
+| .3ms (ethernet) | 1,100,000 |
+| 3.5ms (wireless) | 750,000 |
 
 ##### Protocol:
 
