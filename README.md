@@ -21,7 +21,7 @@ It is intended to be very easy to modify.
     Server
     Client <args>
 
-##### To build and run from source:
+##### To build and run from source (recommended):
 
     cabal sandbox init
     cabal install --only-dependencies
