@@ -15,7 +15,13 @@ It is intended to be very easy to modify.
 - Atomic transactions (e.g. atomic read-and-swap)
 - Optional disk persistence (with atomic snapshotting)
 
-##### To build and run:
+##### To install using Cabal:
+
+    cabal install neks
+    Server
+    Client <args>
+
+##### To build and run from source:
 
     cabal sandbox init
     cabal install --only-dependencies
@@ -24,10 +30,10 @@ It is intended to be very easy to modify.
 
 or, with dependencies installed:
 
-    ghc -O2 -threaded Server.hs
-    ghc -O2 -threaded Client.hs
-    ./Server +RTS -N<number of cores>
-    ./Client <args>
+    ghc -O2 -threaded Network/Neks/Server.hs
+    ghc -O2 -threaded Network/Neks/Client.hs
+    ./Network/Neks/Server +RTS -N<number of cores>
+    ./Network/Neks/Client <args>
 
 To run the Python client:
 
