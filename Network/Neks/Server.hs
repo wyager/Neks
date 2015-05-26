@@ -2,6 +2,7 @@ module Main where
 
 import qualified Network as Net
 import System.IO (Handle, hClose)
+import System.Environment (getArgs)
 import Data.ByteString (ByteString)
 import Control.Monad (forever, unless)
 import Control.Concurrent.STM (STM, atomically)
@@ -15,8 +16,14 @@ import Network.Neks.Actions (Request(Set, Get, Delete, Atomic), Reply(Found, Not
 
 type Store = DataStore ByteString ByteString
 
--- With disk persistence:
 main = do
+        args <- getArgs
+        case args of
+                ["--no-persistence"] -> serveWithoutPersistence
+                ["--help"] -> putStrLn instructions
+                _ -> serveWithPersistence
+
+serveWithPersistence = do
         loaded <- loadFrom "store.kvs"
         globalStore <- case loaded of
                 Just store -> return store
@@ -26,10 +33,10 @@ main = do
         putStrLn "Serving on port 9999 \nSaving DB to store.kvs"
         serve globalStore (Net.PortNumber 9999)
 
--- Without disk persistence: 
--- main = do
---     globalStore <- atomically createStore
---     serve globalStore
+serveWithoutPersistence = do
+        globalStore <- atomically createStore
+        putStrLn "Serving on port 9999\nNot persisting to disk"
+        serve globalStore (Net.PortNumber 9999)
 
 serve :: Store -> Net.PortID -> IO ()
 serve store port = Net.withSocketsDo $ do
@@ -77,3 +84,6 @@ processWith store (Delete k) = do
 processWith store (Atomic requests) = do
         results <- mapM (processWith store) requests
         return (concat results)
+
+instructions = "Usage: Server <opt-args>\n" ++
+               "<opt-args> can be empty or can be \"--no-persistence\" to disable storing keys and values on disk"
