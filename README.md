@@ -39,7 +39,7 @@ To run the Python client:
 
     python3 Client.py
 
-#### To view instructions:
+##### To view instructions:
 
     Server --help
     Client --help
