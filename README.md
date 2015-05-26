@@ -18,8 +18,13 @@ It is intended to be very easy to modify.
 ##### To install using Cabal:
 
     cabal install neks
-    Server
+    Server <opt-args>
     Client <args>
+
+To view usage instructions for either executable:
+
+    Server --help
+    Client --help
 
 ##### To build and run from source (recommended):
 

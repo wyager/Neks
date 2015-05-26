@@ -6,3 +6,6 @@ cabal.sandbox.config
 __pycache__
 *~
 *.kvs
+
+# vim swapfiles
+*.sw*

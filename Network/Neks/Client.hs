@@ -26,6 +26,7 @@ main = Net.withSocketsDo $ do
                                 ["--get", k]    -> get k server
                                 ["--test"]      -> test host portID
                                 _               -> putStrLn instructions
+                ["--help"] -> putStrLn instructions -- To be explicit
                 _ -> putStrLn instructions
 
 request :: Handle -> [Request] -> IO (Either String [Reply])
