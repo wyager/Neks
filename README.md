@@ -21,11 +21,6 @@ It is intended to be very easy to modify.
     Server <opt-args>
     Client <args>
 
-To view usage instructions for either executable:
-
-    Server --help
-    Client --help
-
 ##### To build and run from source (recommended):
 
     cabal sandbox init
@@ -43,6 +38,11 @@ or, with dependencies installed:
 To run the Python client:
 
     python3 Client.py
+
+#### To view instructions:
+
+    Server --help
+    Client --help
 
 ##### Benchmark:
 

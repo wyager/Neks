@@ -19,9 +19,10 @@ type Store = DataStore ByteString ByteString
 main = do
         args <- getArgs
         case args of
+                [] -> serveWithPersistence
                 ["--no-persistence"] -> serveWithoutPersistence
-                ["--help"] -> putStrLn instructions
-                _ -> serveWithPersistence
+                ["--help"] -> putStrLn instructions -- To be explicit
+                _          -> putStrLn instructions
 
 serveWithPersistence = do
         loaded <- loadFrom "store.kvs"
