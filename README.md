@@ -18,22 +18,22 @@ It is intended to be very easy to modify.
 ##### To install using Cabal:
 
     cabal install neks
-    Server <opt-args>
-    Client <args>
+    NeksServer <opt-args>
+    NeksClient <args>
 
 ##### To build and run from source (recommended):
 
     cabal sandbox init
     cabal install --only-dependencies
-    cabal run Server
-    cabal run Client -- <args>
+    cabal run NeksServer
+    cabal run NeksClient -- <args>
 
 or, with dependencies installed:
 
-    ghc -O2 -threaded Network/Neks/Server.hs
-    ghc -O2 -threaded Network/Neks/Client.hs
-    ./Network/Neks/Server +RTS -N<number of cores>
-    ./Network/Neks/Client <args>
+    ghc -O2 -threaded Network/Neks/NeksServer.hs
+    ghc -O2 -threaded Network/Neks/NeksClient.hs
+    ./Network/Neks/NeksServer +RTS -N<number of cores>
+    ./Network/Neks/NeksClient <args>
 
 To run the Python client:
 
@@ -41,8 +41,8 @@ To run the Python client:
 
 ##### To view instructions:
 
-    Server --help
-    Client --help
+    NeksServer --help
+    NeksClient --help
 
 ##### Benchmark:
 
