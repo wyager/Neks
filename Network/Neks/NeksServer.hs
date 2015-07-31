@@ -86,5 +86,5 @@ processWith store (Atomic requests) = do
         results <- mapM (processWith store) requests
         return (concat results)
 
-instructions = "Usage: Server <opt-args>\n" ++
+instructions = "Usage: NeksServer <opt-args>\n" ++
                "<opt-args> can be empty or can be \"--no-persistence\" to disable storing keys and values on disk"
